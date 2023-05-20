@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="./style.css">
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            color: orange;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 200px;
+        }
+
+        thead {
+            background-color: orange;
+            color: white;
+        }
+
+        .stt {
+            text-align: center;
+        }
+
+        img {
+            width: 150px;
+            height: 100px;
+        }
+
+        .container {
+            display: flex;
+            justify-content: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <img src="./image/samsng-mx-t40-05-2023 (1).jpg" alt="">
+        <main>
+            <div class="title">
+                <h1>Các món ăn ngon Hà Nội</h1>
+            </div>
+            <div class="table">
+                <table border="1">
+                    <thead>
+                        <tr>
+                            <th>STT</th>
+                            <th>Tên món ăn</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                    </tbody>
+                </table>
+            </div>
+        </main>
+
+    </div>
+</body>
+<script>
+    const foodList = [
+        {
+            id: 1,
+            name: "Bánh Cuốn Thanh Trì"
+        },
+        {
+            id: 2,
+            name: "Bánh Cuốn Thanh Trì1"
+        },
+        {
+            id: 3,
+            name: "Bánh Cuốn Thanh Trì2"
+        },
+        {
+            id: 4,
+            name: "Bánh Cuốn Thanh Trì4"
+        },
+    ]
+    function showFood() {
+        const tbody = document.querySelector("tbody");
+        // console.log(tbody)
+        for (let item of foodList) {
+            tbody.innerHTML += `
+                    <tr>
+                        <td class="stt">${item.id}</td>
+                        <td>${item.name}</td>
+                    </tr>
+            `
+        }
+    }
+    showFood();
+</script>
+
+</html>
