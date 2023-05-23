@@ -4,29 +4,31 @@ $host = 'localhost';
 $username = 'root';
 $password = '';
 $database = 'crud';
+
 $conn = new mysqli($host, $username, $password, $database);
 if ($conn->connect_error) {
-    die('Không thể kết nối đến cơ sở dữ liệu: ' . $conn->connect_error);
+    die("không thể kết nối đến cơ sở dữ liệu:") . $conn->connect_error;
 }
-//lấy dữ liệu từ bảng users hiển thị ra table
+
+// lấy dữ liệu và hiển thị
 $sql = "SELECT * FROM users";
 $result = mysqli_query($conn, $sql);
-$user = mysqli_fetch_all($result, MYSQLI_ASSOC);
+$users = mysqli_fetch_all($result, MYSQLI_ASSOC);
 $idItem = 1;
-//thực hiện thêm người dùng
+// var_dump($user);
+//xử lý thêm dữ liệu
 if (isset($_POST['add'])) {
-    //gán dữ liệu lấy được vào biến
     $name = $_POST['name'];
     $email = $_POST['email'];
-    $sql = "INSERT INTO users(name,email) VALUES ('$name','$email')";
+    $sql = "INSERT INTO users (name,email) VALUES ('$name','$email')";
     if (mysqli_query($conn, $sql)) {
-        header("location:./crud.php");
         echo "thêm thành công";
+        header("location:./crud.php");
     } else {
         echo "lỗi" . $conn->connect_error;
     }
 }
-// thực hiện xóa
+//xử lý xóa dữ liệu
 if (isset($_GET['deleteId'])) {
     $id = $_GET['deleteId'];
     $sql = "DELETE FROM users WHERE id = $id";
@@ -34,28 +36,28 @@ if (isset($_GET['deleteId'])) {
         echo "xóa thành công";
         header("location:./crud.php");
     } else {
-        echo $conn->connect_error;
+        echo "lỗi" . $conn->connect_error;
     }
 }
-//thực lấy dữ liệu của dùng hiển thị lên form
+// lấy dữ liệu cần sửa
 if (isset($_GET['editId'])) {
     $id = $_GET['editId'];
     $sql = "SELECT * FROM users WHERE id = $id";
-    //lấy dữ liệu
     $result = mysqli_query($conn, $sql);
-    $userEdit = mysqli_fetch_assoc($result);
+    $editUser = mysqli_fetch_assoc($result);
 }
-//thực hiện việc sửa dữ liệu đã được lấy
+
+//cập nhật lại dữ liệu
 if (isset($_POST['update'])) {
     $id = $_POST['id'];
     $name = $_POST['name'];
     $email = $_POST['email'];
-    $sql = "UPDATE users SET name = '$name', email = '$email' WHERE id = $id";
+    $sql = "UPDATE users SET name = '$name' , email = '$email' WHERE id = $id";
     if (mysqli_query($conn, $sql)) {
-        echo "sửa thành công";
+        echo "thêm thành công";
         header("location:./crud.php");
     } else {
-        echo $conn->connect_error;
+        echo "lỗi" . $conn->connect_error;
     }
 }
 ?>
@@ -74,11 +76,10 @@ if (isset($_POST['update'])) {
         <form action="" method="post">
             <h1>Thêm người dùng</h1>
             <label for="">Tên</label>:
-            <input type="text" name="name"><br>
+            <input type="text" name="name" id=""><br>
             <label for="">Email</label>:
             <input type="email" name="email" id=""><br>
             <button type="submit" name="add">Thêm</button>
-
         </form>
         <h1>Danh sách người dùng</h1>
         <table border="1">
@@ -87,55 +88,57 @@ if (isset($_POST['update'])) {
                     <th>STT</th>
                     <th>Tên</th>
                     <th>Email</th>
-                    <th>Action</th>
+                    <th>Hành động</th>
                 </tr>
             </thead>
             <tbody>
-                <?php foreach ($user as $value) : ?>
-                    <tr>
-                        <td><?php echo $idItem++ ?></td>
-                        <td><?php echo $value['name'] ?></td>
-                        <td><?php echo $value['email'] ?></td>
-                        <td>
-                            <a href="?editId=<?php echo $value['id'] ?>"><button>Sửa</button></a>
-                            <a href="?deleteId=<?php echo $value['id'] ?>"><button>Xóa</button></a>
-                        </td>
-                    </tr>
-                <?php endforeach; ?>
+                <?php foreach ($users as $value) { ?>
+                <tr>
+                    <td><?php echo $idItem++ ?></td>
+                    <td><?php echo  $value['name'] ?> </td>
+                    <td><?php echo $value['email'] ?></td>
+                    <td>
+                        <a href="./crud.php?editId=<?php echo $value['id'] ?>"><button>Sửa</button></a>
+                        <a href="./crud.php?deleteId=<?php echo $value['id'] ?>"><button>Xóa</button></a>
+                    </td>
+                </tr>
+                <?php }; ?>
             </tbody>
         </table>
         <form action="" method="post">
             <h1>Sửa người dùng</h1>
             <input type="hidden" name="id" value="<?php if (isset($_GET['editId'])) {
-                                                        echo $userEdit['id'];
+                                                        echo $editUser['id'];
                                                     }  ?>">
             <label for="">Tên</label>:
             <input type="text" name="name" value="<?php if (isset($_GET['editId'])) {
-                                                        echo $userEdit['name'];
-                                                    }  ?>"><br>
+                                                        echo $editUser['name'];
+                                                    }  ?>" id=""><br>
             <label for="">Email</label>:
-            <input type="email" name="email" id="" value="<?php if (isset($_GET['editId'])) {
-                                                                echo $userEdit['email'];
-                                                            }  ?>"><br>
+            <input type="email" name="email" value="<?php if (isset($_GET['editId'])) {
+                                                        echo $editUser['email'];
+                                                    }  ?>" id=""><br>
             <button type="submit" name="update">Sửa</button>
         </form>
-        <div class="search">
-            <h1>Tìm kiếm</h1>
-            <form action="" method="post">
-                <label for="">Nhập tên người dùng</label>
-                <input type="search" name="name" id="">
-                <button type="submit" name="search">Tìm kiếm</button>
-            </form>
-        </div>
+
+
+        <form action="" method="post">
+            <label for="">Nhập tên</label>:
+            <input type="text" name="name" id="">
+            <button name="search" type="submit">Tìm kiếm</button>
+        </form>
         <?php
         if (isset($_POST['search'])) {
             $name = $_POST['name'];
             $sql = "SELECT * FROM users WHERE name LIKE '$name%'";
             $result = mysqli_query($conn, $sql);
-            $userSearch  = mysqli_fetch_assoc($result);
-            echo "tên người dùng: " . $userSearch['name'] . "<br>";
-            echo "email người dùng: " . $userSearch['email'];
+            $userSearch = mysqli_fetch_all($result,MYSQLI_ASSOC);
+            foreach ($userSearch as $user) {
+                echo "Tên: " . $user['name'] . "<br>";
+                echo "Email: " . $user['email'] . "<br>";
+            }
         }
+
         ?>
     </div>
 </body>
