@@ -1,8 +1,8 @@
 <?php
 //kết nối cơ sở dữ liệu
 $host = 'localhost';
-$username = 'root';
-$password = '';
+$username = 'root'; // admin
+$password = ''; //123456
 $database = 'ql_cb';
 $conn = mysqli_connect($host, $username, $password, $database);
 
@@ -26,22 +26,19 @@ if (isset($_POST['add'])) {
     $tinh = $_POST['tinh'];
     // truy vấn thêm dữ liệu
     $sql = "INSERT INTO tblcanbo (ma_canBo,cmnd,hovatendem,ten,tinh) VALUES ('$ma_caBo','$cmnd','$hovatendem','$ten','$tinh' ) ";
-    // mysqli_query($conn, $sql);
-    if (mysqli_query($conn, $sql)) {
-        echo "Thêm thành công";
-        header("location:./ql_canBo.php");
-    } else {
-        echo "lỗi: " . $conn->connect_error;
-    }
+    mysqli_query($conn, $sql);
 }
 if (isset($_GET['deleteId'])) {
     $id = $_GET['deleteId'];
     $sql = "DELETE FROM tblcanbo WHERE ma_canBo = $id";
-    if (mysqli_query($conn, $sql)) {
-        echo "Xóa thành công";
-        header("location:./ql_canBo.php");
-    } else {
-        echo "lỗi: " . $conn->connect_error;
+    mysqli_query($conn, $sql);
+}
+
+if (isset($_POST['delete']) && isset($_POST['deleteId'])) {
+    // var_dump($_POST);
+    foreach ($_POST['deleteId'] as $id) {
+        $sql = "DELETE FROM tblcanbo WHERE ma_canBo = $id";
+        mysqli_query($conn, $sql);
     }
 }
 // hiển thị để sửa
@@ -60,13 +57,7 @@ if (isset($_POST['update'])) {
     $ten = $_POST['ten'];
     $tinh = $_POST['tinh'];
     $sql = "UPDATE tblcanbo SET ma_canBo = '$ma_caBo' , cmnd = '$cmnd' , hovatendem = '$hovatendem' , ten = '$ten',tinh='$tinh' WHERE ma_canBo = $ma_caBo";
-    // mysqli_query($conn, $sql);
-    if (mysqli_query($conn, $sql)) {
-        echo "Sửa thành công";
-        header("location:./ql_canBo.php");
-    } else {
-        echo "lỗi: " . $conn->connect_error;
-    }
+    mysqli_query($conn, $sql);
 }
 ?>
 <!DOCTYPE html>
@@ -74,9 +65,6 @@ if (isset($_POST['update'])) {
 
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
 </head>
 
 <body>
@@ -99,39 +87,40 @@ if (isset($_POST['update'])) {
                 <option value="Huế">Huế</option>
                 <option value="Hải Phòng">Hải Phòng</option>
             </select> <br>
+
             <button type="submit" name="add">Thêm</button>
             <button type="submit" name="update">Sửa</button>
             <button type="submit" name="delete">Xóa</button>
-
-        </form>
-        <table border="1">
-            <thead>
-                <tr>
-                    <th>Mã cán bộ</th>
-                    <th>Số CMND</th>
-                    <th>Họ và tên đệm</th>
-                    <th>Tên</th>
-                    <th>Chi tiết</th>
-                    <th>Xóa</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($canbo as $value) { ?>
+            <table border="1">
+                <thead>
                     <tr>
-                        <td><?php echo $value['ma_canBo'] ?></td>
-                        <td><?php echo $value['cmnd'] ?></td>
-                        <td><?php echo $value['hovatendem'] ?></td>
-                        <td><?php echo $value['ten'] ?></td>
-                        <td>
-                            <a href="?editId=<?php echo $value['ma_canBo'] ?>" class="">Sửa</a>
-                        </td>
-                        <td>
-                            <a href="?deleteId=<?php echo $value['ma_canBo'] ?>" class="">Xóa</a>
-                        </td>
+                        <th>Mã cán bộ</th>
+                        <th>Số CMND</th>
+                        <th>Họ và tên đệm</th>
+                        <th>Tên</th>
+                        <th>Chi tiết</th>
+                        <th>Xóa</th>
                     </tr>
-                <?php } ?>
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    <?php foreach ($canbo as $value) { ?>
+                        <tr>
+                            <td><?= $value['ma_canBo'] ?></td>
+                            <td><?php echo $value['cmnd'] ?></td>
+                            <td><?php echo $value['hovatendem'] ?></td>
+                            <td><?php echo $value['ten'] ?></td>
+                            <td>
+                                <a href="?editId=<?php echo $value['ma_canBo'] ?>" class="">Sửa</a>
+                            </td>
+                            <td>
+                                <a href="?deleteId=<?php echo $value['ma_canBo'] ?>" class="">Xóa</a>
+                                <input type="checkbox" name="deleteId[]" value="<?php echo $value['ma_canBo'] ?>">
+                            </td>
+                        </tr>
+                    <?php } ?>
+                </tbody>
+            </table>
+        </form>
     </div>
 </body>
 
