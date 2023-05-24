@@ -18,6 +18,7 @@ $idItem = 1;
 // var_dump($user);
 //xử lý thêm dữ liệu
 if (isset($_POST['add'])) {
+    var_dump($_POST);
     $name = $_POST['name'];
     $email = $_POST['email'];
     $sql = "INSERT INTO users (name,email) VALUES ('$name','$email')";
@@ -75,11 +76,20 @@ if (isset($_POST['update'])) {
     <div class="container">
         <form action="" method="post">
             <h1>Thêm người dùng</h1>
+            <input type="hidden" name="id" value="<?php if (isset($_GET['editId'])) {
+                                                        echo $editUser['id'];
+                                                    }  ?>">
             <label for="">Tên</label>:
-            <input type="text" name="name" id=""><br>
+            <input type="text" name="name" value="<?php if (isset($_GET['editId'])) {
+                                                        echo $editUser['name'];
+                                                    }  ?>"><br>
             <label for="">Email</label>:
-            <input type="email" name="email" id=""><br>
+            <input type="email" name="email" value="<?php if (isset($_GET['editId'])) {
+                                                        echo $editUser['email'];
+                                                    }  ?>"><br>
+            <input type="checkbox" name="check" id="">
             <button type="submit" name="add">Thêm</button>
+            <button type="submit" name="update">Sửa</button>
         </form>
         <h1>Danh sách người dùng</h1>
         <table border="1">
@@ -93,33 +103,20 @@ if (isset($_POST['update'])) {
             </thead>
             <tbody>
                 <?php foreach ($users as $value) { ?>
-                <tr>
-                    <td><?php echo $idItem++ ?></td>
-                    <td><?php echo  $value['name'] ?> </td>
-                    <td><?php echo $value['email'] ?></td>
-                    <td>
-                        <a href="./crud.php?editId=<?php echo $value['id'] ?>"><button>Sửa</button></a>
-                        <a href="./crud.php?deleteId=<?php echo $value['id'] ?>"><button>Xóa</button></a>
-                    </td>
-                </tr>
+                    <tr>
+                        <td><?php echo $idItem++ ?></td>
+                        <td><?php echo  $value['name'] ?> </td>
+                        <td><?php echo $value['email'] ?></td>
+                        <td>
+
+                            <a href="./crud.php?editId=<?php echo $value['id'] ?>"><button>Sửa</button></a>
+                            <a href="./crud.php?deleteId=<?php echo $value['id'] ?>"><button>Xóa</button></a>
+                        </td>
+                    </tr>
                 <?php }; ?>
             </tbody>
         </table>
-        <form action="" method="post">
-            <h1>Sửa người dùng</h1>
-            <input type="hidden" name="id" value="<?php if (isset($_GET['editId'])) {
-                                                        echo $editUser['id'];
-                                                    }  ?>">
-            <label for="">Tên</label>:
-            <input type="text" name="name" value="<?php if (isset($_GET['editId'])) {
-                                                        echo $editUser['name'];
-                                                    }  ?>" id=""><br>
-            <label for="">Email</label>:
-            <input type="email" name="email" value="<?php if (isset($_GET['editId'])) {
-                                                        echo $editUser['email'];
-                                                    }  ?>" id=""><br>
-            <button type="submit" name="update">Sửa</button>
-        </form>
+
 
 
         <form action="" method="post">
@@ -132,10 +129,15 @@ if (isset($_POST['update'])) {
             $name = $_POST['name'];
             $sql = "SELECT * FROM users WHERE name LIKE '$name%'";
             $result = mysqli_query($conn, $sql);
-            $userSearch = mysqli_fetch_all($result,MYSQLI_ASSOC);
-            foreach ($userSearch as $user) {
-                echo "Tên: " . $user['name'] . "<br>";
-                echo "Email: " . $user['email'] . "<br>";
+            if (mysqli_num_rows($result)) {
+
+                $userSearch = mysqli_fetch_all($result, MYSQLI_ASSOC);
+                foreach ($userSearch as $user) {
+                    echo "Tên: " . $user['name'] . "<br>";
+                    echo "Email: " . $user['email'] . "<br>";
+                }
+            } else {
+                echo "không tìm thấy";
             }
         }
 
